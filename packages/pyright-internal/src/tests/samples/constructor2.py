@@ -34,7 +34,7 @@ class Donkey(Animal[int, int], Generic[_T3]):
 
 class Flyer(Protocol[_T1_contra]):
     def get_wingspan(self, p1: _T1_contra) -> float:
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class CaveDweller(Generic[_T1]):
@@ -43,7 +43,7 @@ class CaveDweller(Generic[_T1]):
 
 class Bat(Animal[int, int], CaveDweller[int]):
     def get_wingspan(self, p1: int) -> float:
-        raise NotImplemented
+        raise NotImplementedError
 
 
 def s1():

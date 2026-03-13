@@ -1,6 +1,6 @@
 # This sample tests for proper handling of constrained or bound TypeVars.
 
-from typing import Generic, TypeVar
+from typing import TypeVar
 
 
 class IntSubclass1(int):

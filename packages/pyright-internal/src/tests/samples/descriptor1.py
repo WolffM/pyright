@@ -1,7 +1,7 @@
 # This sample tests the detection and handling of asymmetric descriptors
 # and properties. Type narrowing should be disabled in these cases.
 
-from typing import Any, Hashable, Iterable, Literal, Self, overload
+from typing import Any, Literal, Self, overload
 
 
 class A:

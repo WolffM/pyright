@@ -36,10 +36,10 @@ def process_event1(event: Event) -> None:
 
 
 def process_event2(event: Event) -> None:
-    if event["tag"] is "new-job":
+    if event["tag"] == "new-job":
         reveal_type(event, expected_text="Event1")
         event["job_name"]
-    elif event["tag"] is 2:
+    elif event["tag"] == 2:
         reveal_type(event, expected_text="Event2")
         event["job_id"]
     else:

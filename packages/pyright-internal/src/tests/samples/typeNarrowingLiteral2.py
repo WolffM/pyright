@@ -76,7 +76,7 @@ def func7(x: Any):
 
 
 def func8(x: Literal[0, 1] | None):
-    if x is 1:
+    if x == 1:
         reveal_type(x, expected_text="Literal[1]")
     else:
         reveal_type(x, expected_text="Literal[0, 1] | None")

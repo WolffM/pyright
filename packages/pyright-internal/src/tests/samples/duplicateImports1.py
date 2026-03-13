@@ -3,10 +3,9 @@
 import sys
 
 # This should generate an error because Any is duplicated
-from typing import Any, Dict, Any
+from typing import Dict, Any
 
 # This should generate an error because sys is duplicated
-import sys
 
 
 a: Dict[Any, Any]

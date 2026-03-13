@@ -2,7 +2,7 @@
 # that suppress exceptions, as indicated by a return type of "bool"
 # for the __exit__ or __aexit__ method.
 
-from contextlib import suppress, AsyncExitStack
+from contextlib import suppress
 from typing import Never
 
 

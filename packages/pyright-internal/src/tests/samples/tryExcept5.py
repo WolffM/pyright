@@ -1,7 +1,6 @@
 # This sample tests a try statement with no except clauses
 # but a finally clause.
 
-from typing import Any
 import asyncio
 
 
