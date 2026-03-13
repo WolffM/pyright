@@ -17,6 +17,7 @@ import {
     ConfigurationItem,
     ConfigurationRequest,
     DiagnosticRefreshRequest,
+    DidChangeTextDocumentNotification,
     DidChangeWorkspaceFoldersNotification,
     DidOpenTextDocumentNotification,
     Disposable,
@@ -798,6 +799,21 @@ export async function openFile(info: PyrightServerInfo, markerName: string, text
     });
 
     await waitForTestSignal(info, CustomLSP.TestSignalKinds.DidOpenDocument);
+}
+
+export async function changeFile(info: PyrightServerInfo, markerName: string, newText: string, version = 2) {
+    const marker = getMarkerByName(info.testData, markerName);
+    const uri = marker.fileUri.toString();
+
+    // Reset the DidChangeDocument signal so we can wait for the next one.
+    info.signals.set(CustomLSP.TestSignalKinds.DidChangeDocument, createDeferred<boolean>());
+
+    info.connection.sendNotification(DidChangeTextDocumentNotification.type, {
+        textDocument: { uri, version },
+        contentChanges: [{ text: newText }],
+    });
+
+    await waitForTestSignal(info, CustomLSP.TestSignalKinds.DidChangeDocument);
 }
 
 export async function hover(info: PyrightServerInfo, markerName: string) {

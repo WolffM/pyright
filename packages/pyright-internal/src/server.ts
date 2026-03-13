@@ -194,6 +194,11 @@ export class PyrightServer extends LanguageServerBase {
                 if (pythonAnalysisSection.typeEvaluationTimeThreshold !== undefined) {
                     serverSettings.typeEvaluationTimeThreshold = pythonAnalysisSection.typeEvaluationTimeThreshold;
                 }
+
+                if (pythonAnalysisSection.clearDiagnosticsImmediatelyOnEdit !== undefined) {
+                    serverSettings.clearDiagnosticsImmediatelyOnEdit =
+                        !!pythonAnalysisSection.clearDiagnosticsImmediatelyOnEdit;
+                }
             } else {
                 serverSettings.autoSearchPaths = true;
             }

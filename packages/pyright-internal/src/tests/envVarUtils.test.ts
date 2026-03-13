@@ -222,6 +222,7 @@ function createWorkspace(rootUri: Uri | undefined) {
         disableTaggedHints: false,
         disableOrganizeImports: false,
         disableWorkspaceSymbol: false,
+        clearDiagnosticsImmediatelyOnEdit: false,
         isInitialized: createInitStatus(),
         searchPathsToWatch: [],
     };

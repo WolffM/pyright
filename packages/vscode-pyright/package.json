@@ -159,6 +159,12 @@
                     ],
                     "scope": "resource"
                 },
+                "python.analysis.clearDiagnosticsImmediatelyOnEdit": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "When enabled, clears diagnostics immediately when a file is edited (before re-analysis completes). This prevents stale diagnostics from being visible while analysis is pending.",
+                    "scope": "resource"
+                },
                 "python.analysis.include": {
                     "type": "array",
                     "default": [],

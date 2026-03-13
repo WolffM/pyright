@@ -24,6 +24,7 @@ import { isArray } from '../common/core';
 import { normalizeSlashes } from '../common/pathUtils';
 import {
     cleanupAfterAll,
+    changeFile,
     DEFAULT_WORKSPACE_ROOT,
     getParseResults,
     hover,
@@ -31,6 +32,7 @@ import {
     PyrightServerInfo,
     runPyrightServer,
     waitForDiagnostics,
+    waitForEvent,
 } from './lsp/languageServerTestUtils';
 
 describe(`Basic language server tests`, () => {
@@ -310,6 +312,75 @@ describe(`Basic language server tests`, () => {
                     `Expected diagnostic not found. Got ${JSON.stringify(diagnostic.diagnostics)}`
                 );
             });
+
+            // Pull mode doesn't use push notifications, so clearDiagnosticsImmediatelyOnEdit
+            // is only relevant for push diagnostics mode.
+            if (!supportsPullDiagnostics) {
+                test('clearDiagnosticsImmediatelyOnEdit clears diagnostics on didChange', async () => {
+                    const code = `
+// @filename: test.py
+//// import [|/*marker*/os|]
+    `;
+                    const settings = [
+                        {
+                            item: {
+                                scopeUri: `file://${normalizeSlashes(DEFAULT_WORKSPACE_ROOT, '/')}`,
+                                section: 'python.analysis',
+                            },
+                            value: {
+                                typeCheckingMode: 'strict',
+                                clearDiagnosticsImmediatelyOnEdit: true,
+                            },
+                        },
+                    ];
+
+                    const info = await runLanguageServer(
+                        DEFAULT_WORKSPACE_ROOT,
+                        code,
+                        /* callInitialize */ true,
+                        settings,
+                        undefined,
+                        /* supportsBackgroundThread */ true,
+                        supportsPullDiagnostics
+                    );
+
+                    await openFile(info, 'marker');
+
+                    // Wait for initial diagnostics (reportUnusedImport for 'os')
+                    const initialDiagnostics = await waitForDiagnostics(info);
+                    const initialFileDiag = initialDiagnostics.find((d) => d.uri.includes('test.py'));
+                    assert(initialFileDiag, 'Expected initial diagnostics for test.py');
+                    assert.ok(
+                        initialFileDiag.diagnostics.length > 0,
+                        'Expected at least one initial diagnostic'
+                    );
+
+                    // Track publish notifications to detect immediate clearing
+                    let clearedDiagnosticsUri: string | undefined;
+                    const clearingPromise = waitForEvent(
+                        info.diagnosticsEvent,
+                        'clear diagnostics',
+                        (p) => {
+                            if (p.uri.includes('test.py') && p.diagnostics.length === 0) {
+                                clearedDiagnosticsUri = p.uri;
+                                return true;
+                            }
+                            return false;
+                        },
+                        10000
+                    );
+
+                    // Send a didChange notification with new content
+                    await changeFile(info, 'marker', 'import os\n');
+
+                    // Verify that diagnostics were immediately cleared (before re-analysis finishes)
+                    await clearingPromise;
+                    assert.ok(
+                        clearedDiagnosticsUri,
+                        'Expected diagnostics to be cleared immediately on edit'
+                    );
+                });
+            }
         });
     });
 });
