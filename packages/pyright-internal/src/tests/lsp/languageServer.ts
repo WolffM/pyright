@@ -8,6 +8,7 @@
 import {
     CancellationToken,
     Connection,
+    DidChangeTextDocumentParams,
     DidOpenTextDocumentParams,
     Disposable,
     Message,
@@ -182,6 +183,17 @@ class TestServer extends PyrightServer {
         CustomLSP.sendNotification(this.connection, CustomLSP.Notifications.TestSignal, {
             uri: params.textDocument.uri,
             kind: CustomLSP.TestSignalKinds.DidOpenDocument,
+        });
+    }
+
+    protected override async onDidChangeTextDocument(
+        params: DidChangeTextDocumentParams,
+        ipythonMode?: IPythonMode
+    ): Promise<void> {
+        await super.onDidChangeTextDocument(params, ipythonMode);
+        CustomLSP.sendNotification(this.connection, CustomLSP.Notifications.TestSignal, {
+            uri: params.textDocument.uri,
+            kind: CustomLSP.TestSignalKinds.DidChangeDocument,
         });
     }
 }
