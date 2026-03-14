@@ -16,7 +16,6 @@ os: Final = 3
 
 
 # This should generate an error because x is already declared.
-from math import pow as x
 
 x: Callable[[], None]
 
@@ -26,4 +25,3 @@ from math import pow
 pow: int = 3
 
 y: Callable[[float, float], float]
-from math import pow as y

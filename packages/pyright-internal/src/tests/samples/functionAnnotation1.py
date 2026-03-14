@@ -2,7 +2,6 @@
 
 # pyright: strict, reportMissingParameterType=false, reportTypeCommentUsage=false
 
-from typing import Optional, Literal as _Literal, Union
 
 
 def func1a(a, b):

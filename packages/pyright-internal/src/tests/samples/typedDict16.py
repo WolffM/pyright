@@ -1,6 +1,6 @@
 # This sample tests that type compatibility between TypedDicts.
 
-from typing import TypedDict, final
+from typing import TypedDict
 
 
 class TD0(TypedDict):

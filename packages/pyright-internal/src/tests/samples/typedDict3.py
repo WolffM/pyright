@@ -1,6 +1,6 @@
 # This sample tests the type analyzer's handling of TypedDict classes.
 
-from typing import TypeVar, TypedDict
+from typing import TypedDict
 
 
 class Movie(TypedDict, total=False):

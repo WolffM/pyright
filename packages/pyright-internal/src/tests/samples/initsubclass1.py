@@ -3,7 +3,7 @@
 # PEP 487.
 
 from datetime import datetime
-from typing import Any, Optional, Type, TypedDict
+from typing import Any, Optional, Type
 
 
 class ClassA:

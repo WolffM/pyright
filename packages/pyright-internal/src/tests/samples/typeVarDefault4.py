@@ -2,7 +2,6 @@
 # types cannot be after TypeVars with default types. This is the same as
 # typeVarDefault3 except that it uses PEP 695 syntax.
 
-from typing import TypeVar
 
 
 # This should generate an error because T1 is after T2.

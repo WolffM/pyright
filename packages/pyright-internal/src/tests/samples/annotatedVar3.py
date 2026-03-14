@@ -1,6 +1,6 @@
 # This sample tests annotated types on local variables.
 
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 
 class ClassB(object):

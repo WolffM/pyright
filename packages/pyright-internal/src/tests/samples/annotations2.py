@@ -3,7 +3,6 @@
 # These are used in some older typestub files because they're
 # compatible with versions of Python before 3.6.
 
-from typing import List, Optional, Tuple
 
 a = 3  # type: int
 
