@@ -398,6 +398,7 @@ export abstract class LanguageServerBase implements LanguageServerInterface, Dis
             workspace.disableLanguageServices = !!serverSettings.disableLanguageServices;
             workspace.disableTaggedHints = !!serverSettings.disableTaggedHints;
             workspace.disableOrganizeImports = !!serverSettings.disableOrganizeImports;
+            workspace.clearDiagnosticsOnChange = !!serverSettings.clearDiagnosticsOnChange;
         } finally {
             // Don't use workspace.isInitialized directly since it might have been
             // reset due to pending config change event.
@@ -1129,6 +1130,19 @@ export abstract class LanguageServerBase implements LanguageServerInterface, Dis
         workspaces.forEach((w) => {
             w.service.updateOpenFileContents(uri, params.textDocument.version, newContents, ipythonMode);
         });
+
+        // If any containing workspace has clearDiagnosticsOnChange enabled,
+        // immediately clear the diagnostics for this file so clients don't
+        // act on stale diagnostics while reanalysis is pending.
+        if (workspaces.some((w) => w.clearDiagnosticsOnChange)) {
+            this.sendDiagnostics([
+                {
+                    uri: params.textDocument.uri,
+                    version: params.textDocument.version,
+                    diagnostics: [],
+                },
+            ]);
+        }
     }
 
     protected async onDidCloseTextDocument(params: DidCloseTextDocumentParams) {

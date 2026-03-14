@@ -210,6 +210,7 @@ export class TestState {
             disableWorkspaceSymbol: false,
             isInitialized: createInitStatus(),
             searchPathsToWatch: [],
+            clearDiagnosticsOnChange: false,
         };
 
         if (!delayFileInitialization) {
