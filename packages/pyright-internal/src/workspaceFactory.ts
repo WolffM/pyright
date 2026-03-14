@@ -87,6 +87,7 @@ export interface Workspace extends WorkspaceFolder {
     disableWorkspaceSymbol: boolean;
     isInitialized: InitStatus;
     searchPathsToWatch: Uri[];
+    clearDiagnosticsOnChange: boolean;
 }
 
 export interface NormalWorkspace extends Workspace {
@@ -290,6 +291,7 @@ export class WorkspaceFactory implements IWorkspaceFactory {
             disableWorkspaceSymbol: false,
             isInitialized: createInitStatus(),
             searchPathsToWatch: [],
+            clearDiagnosticsOnChange: false,
         };
 
         // Stick in our map

@@ -15,6 +15,7 @@ import {
     InitializedNotification,
     InitializeRequest,
     MarkupContent,
+    PublishDiagnosticsParams,
 } from 'vscode-languageserver';
 
 import { convertOffsetToPosition } from '../common/positionUtils';
@@ -28,9 +29,12 @@ import {
     getParseResults,
     hover,
     openFile,
+    changeFile,
     PyrightServerInfo,
     runPyrightServer,
     waitForDiagnostics,
+    waitForPushDiagnostics,
+    waitForEvent,
 } from './lsp/languageServerTestUtils';
 
 describe(`Basic language server tests`, () => {
@@ -309,6 +313,73 @@ describe(`Basic language server tests`, () => {
                     diagnostic.diagnostics.some((d) => d.code === 'reportUnknownParameterType'),
                     `Expected diagnostic not found. Got ${JSON.stringify(diagnostic.diagnostics)}`
                 );
+            });
+
+            test('clearDiagnosticsOnChange clears diagnostics immediately on didChange', async () => {
+                // This test only applies to push diagnostics mode.
+                if (supportsPullDiagnostics) {
+                    return;
+                }
+
+                const code = `
+// @filename: test.py
+//// from math import cos, sin
+//// import sys
+//// [|/*marker*/|]
+    `;
+                const settings = [
+                    {
+                        item: {
+                            scopeUri: `file://${normalizeSlashes(DEFAULT_WORKSPACE_ROOT, '/')}`,
+                            section: 'python.analysis',
+                        },
+                        value: {
+                            typeCheckingMode: 'strict',
+                            diagnosticMode: 'workspace',
+                        },
+                    },
+                    {
+                        item: {
+                            scopeUri: `file://${normalizeSlashes(DEFAULT_WORKSPACE_ROOT, '/')}`,
+                            section: 'pyright',
+                        },
+                        value: {
+                            clearDiagnosticsOnChange: true,
+                        },
+                    },
+                ];
+
+                const info = await runLanguageServer(
+                    DEFAULT_WORKSPACE_ROOT,
+                    code,
+                    /* callInitialize */ true,
+                    settings,
+                    undefined,
+                    /* supportsBackgroundThread */ true,
+                    /* supportsPullDiagnostics */ false
+                );
+
+                await openFile(info, 'marker');
+
+                // Wait for initial diagnostics to be published
+                const initialDiagnostics = await waitForPushDiagnostics(info, false, 1);
+                const testFileDiag = initialDiagnostics.find((d) => d.uri.includes('test.py'));
+                assert(testFileDiag, 'Expected initial diagnostics for test.py');
+                assert(testFileDiag.diagnostics.length > 0, 'Expected non-empty initial diagnostics');
+
+                // Now change the file; with clearDiagnosticsOnChange enabled, the server should
+                // immediately send empty diagnostics for the file before reanalysis completes.
+                const emptyDiagnosticsReceived = waitForEvent(
+                    info.diagnosticsEvent,
+                    'empty diagnostics after change',
+                    (params: PublishDiagnosticsParams) => params.uri.includes('test.py') && params.diagnostics.length === 0,
+                    10000
+                );
+
+                await changeFile(info, 'marker', 'import os\n');
+
+                // Verify that empty diagnostics were sent immediately (not after reanalysis).
+                await emptyDiagnosticsReceived;
             });
         });
     });
