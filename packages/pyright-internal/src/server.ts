@@ -213,6 +213,11 @@ export class PyrightServer extends LanguageServerBase {
                 serverSettings.disableOrganizeImports = !!pyrightSection.disableOrganizeImports;
                 serverSettings.clearDiagnosticsOnChange = !!pyrightSection.clearDiagnosticsOnChange;
 
+                const diagnosticDelay = pyrightSection.diagnosticDelay;
+                if (typeof diagnosticDelay === 'number') {
+                    serverSettings.diagnosticDelay = Math.max(0, Math.round(diagnosticDelay));
+                }
+
                 const typeCheckingMode = pyrightSection.typeCheckingMode;
                 if (typeCheckingMode && isString(typeCheckingMode)) {
                     serverSettings.typeCheckingMode = typeCheckingMode;

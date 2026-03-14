@@ -462,4 +462,86 @@ describe(`Basic language server tests`, () => {
             );
         });
     });
+
+    describe('diagnosticDelay', () => {
+        jest.setTimeout(200000);
+
+        test('publishes diagnostics without 250ms backoff when diagnosticDelay is 0', async () => {
+            const code = `
+// @filename: root/test.py
+//// from math import cos, sin
+//// [|/*marker*/|]
+            `;
+            const settings = [
+                {
+                    item: {
+                        scopeUri: `file://${normalizeSlashes(DEFAULT_WORKSPACE_ROOT, '/')}`,
+                        section: 'python.analysis',
+                    },
+                    value: {
+                        typeCheckingMode: 'strict',
+                        diagnosticMode: 'workspace',
+                    },
+                },
+                {
+                    item: {
+                        scopeUri: `file://${normalizeSlashes(DEFAULT_WORKSPACE_ROOT, '/')}`,
+                        section: 'pyright',
+                    },
+                    value: {
+                        diagnosticDelay: 0,
+                    },
+                },
+            ];
+
+            const info = await runLanguageServer(
+                DEFAULT_WORKSPACE_ROOT,
+                code,
+                /* callInitialize */ true,
+                settings,
+                undefined,
+                /* supportsBackgroundThread */ false
+            );
+
+            await openFile(info, 'marker');
+
+            // Wait for initial diagnostics.
+            const initialDiagnostics = await waitForDiagnostics(info);
+            const fileDiagnostics = initialDiagnostics.find((d) => d.uri.includes('root/test.py'));
+            assert(fileDiagnostics, 'Expected diagnostics for test.py');
+            assert.ok(
+                fileDiagnostics.diagnostics.length > 0,
+                `Expected non-empty diagnostics but got: ${JSON.stringify(fileDiagnostics.diagnostics)}`
+            );
+
+            const marker = info.testData.markerPositions.get('marker')!;
+            const fileUri = marker.fileUri.toString();
+
+            // Record the time before sending didChange.
+            const didChangeTime = Date.now();
+
+            // Send a didChange notification. With diagnosticDelay=0, reanalysis fires immediately.
+            info.connection.sendNotification(DidChangeTextDocumentNotification.type, {
+                textDocument: { uri: fileUri, version: 2 },
+                contentChanges: [{ text: 'from math import cos, sin\nx: int = "wrong"\n' }],
+            });
+
+            // Diagnostics should be republished after reanalysis. With delay=0 this happens
+            // without the 250ms backoff. Use a tight timeout (<250ms) to ensure the old
+            // 250ms hardcoded backoff would cause this test to fail.
+            await waitForEvent(
+                info.diagnosticsEvent,
+                'reanalysis diagnostics after didChange with delay=0',
+                (p) => p.uri === fileUri && p.diagnostics.length > 0,
+                /* timeout */ 200
+            );
+
+            // Also verify that the diagnostics arrived well before the 250ms default backoff.
+            const elapsed = Date.now() - didChangeTime;
+            assert.ok(
+                elapsed < 250,
+                `Expected diagnostics within 250ms with diagnosticDelay=0, but took ${elapsed}ms`
+            );
+        });
+    });
 });

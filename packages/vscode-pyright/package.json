@@ -1551,6 +1551,13 @@
                     "description": "When enabled, clears diagnostics for a file immediately when it is modified. Reanalysis will repopulate diagnostics once complete. This is useful for programmatic clients (e.g., AI coding tools) that edit files and then read diagnostics to act on them.",
                     "scope": "resource"
                 },
+                "pyright.diagnosticDelay": {
+                    "type": "number",
+                    "default": 250,
+                    "minimum": 0,
+                    "description": "Delay in milliseconds before reanalyzing a file after it is modified. Set to 0 for immediate reanalysis (useful for programmatic tools). Default is 250ms.",
+                    "scope": "resource"
+                },
                 "pyright.disablePullDiagnostics": {
                     "type": "boolean",
                     "default": false,

@@ -86,6 +86,7 @@ export interface Workspace extends WorkspaceFolder {
     disableOrganizeImports: boolean;
     disableWorkspaceSymbol: boolean;
     clearDiagnosticsOnChange: boolean;
+    diagnosticDelay: number;
     isInitialized: InitStatus;
     searchPathsToWatch: Uri[];
 }
@@ -290,6 +291,7 @@ export class WorkspaceFactory implements IWorkspaceFactory {
             disableOrganizeImports: false,
             disableWorkspaceSymbol: false,
             clearDiagnosticsOnChange: false,
+            diagnosticDelay: 250,
             isInitialized: createInitStatus(),
             searchPathsToWatch: [],
         };
