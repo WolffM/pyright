@@ -1,7 +1,7 @@
 # This sample tests the ability to detect errant assert calls
 # that are always true - the "reportAssertAlwaysTrue" option.
 
-from typing import Tuple
+from typing import Any, Tuple
 
 
 # This should generate a warning.

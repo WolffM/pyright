@@ -1,7 +1,7 @@
 # This sample tests that Optional types can be matched
 # to Type[T] expressions by the constraint solver.
 
-from typing import Callable, Generic, TypeVar
+from typing import Callable, Generic, Optional, TypeVar
 
 _T1 = TypeVar("_T1")
 _T2 = TypeVar("_T2", bound=None)

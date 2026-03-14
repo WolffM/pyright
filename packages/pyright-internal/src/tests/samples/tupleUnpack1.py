@@ -1,6 +1,7 @@
 # This sample tests the handling of Unpack[Tuple[...]] as described
 # in PEP 646.
 
+from typing import Union
 from typing_extensions import Unpack  # pyright: ignore[reportMissingModuleSource]
 
 

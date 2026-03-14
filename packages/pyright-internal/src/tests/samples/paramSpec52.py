@@ -1,7 +1,7 @@
 # This sample tests an illegal use of a ParamSpec that resulted in
 # a crash.
 
-from typing import Generic, ParamSpec
+from typing import Callable, Generic, ParamSpec
 
 P = ParamSpec("P")
 

@@ -2,7 +2,7 @@
 # autovariance.
 
 from dataclasses import dataclass
-from typing import Iterator, Sequence, overload
+from typing import Final, Iterator, Sequence, overload
 
 
 class ShouldBeCovariant1[T]:

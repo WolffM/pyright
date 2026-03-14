@@ -56,16 +56,16 @@ def func5():
 def func6(u: Union[type[Exception], tuple[type[Exception], ...]]):
     try:
         ...
-    except ValueError:
+    except ValueError as e:
         ...
-    except u:
+    except u as e:
         ...
 
 
 def func7(u: type[Exception]):
     try:
         ...
-    except ValueError:
+    except ValueError as e:
         ...
-    except u:
+    except u as e:
         ...

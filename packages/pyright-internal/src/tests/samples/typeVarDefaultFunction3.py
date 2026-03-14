@@ -3,6 +3,7 @@
 # expressions that refer to other type variables. This is the same
 # as typeVarDefaultFunction2 except that it uses the PEP 695 syntax.
 
+from typing import TypeVar
 
 
 def func1[T1, T2 = list[T1]](x: T1, y: int | T2 = 0) -> T2 | list[T1]: ...

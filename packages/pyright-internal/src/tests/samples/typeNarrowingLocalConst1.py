@@ -116,7 +116,7 @@ def func8(val: str | None = None):
 
 
 def func9(var: str | None = None):
-    if var_not_None := var is not None:
+    if var_not_None := not (var is None):
         reveal_type(var, expected_text="str")
 
     reveal_type(var, expected_text="str | None")
