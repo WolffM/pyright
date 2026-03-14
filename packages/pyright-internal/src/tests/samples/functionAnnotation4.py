@@ -1,5 +1,6 @@
 # This sample tests the reportTypeCommentUsage diagnostic check.
 
+from typing import Optional
 
 
 # This should generate an error if reportTypeCommentUsage is enabled.

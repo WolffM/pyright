@@ -32,6 +32,6 @@ class Item(Generic[T]):
 
     def read(self) -> T | None:
         if self.value is None:
-            raise RuntimeError("Item is required!")
+            raise RuntimeError(f"Item is required!")
 
         return self.value

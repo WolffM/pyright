@@ -2,7 +2,7 @@
 # to a concrete implementation of an abstract base class that defines
 # (but does not assign) variables.
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import NamedTuple, final
 

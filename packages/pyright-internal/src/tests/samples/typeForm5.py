@@ -2,7 +2,7 @@
 
 # pyright: reportMissingModuleSource=false
 
-from typing import Literal, LiteralString, TypeGuard
+from typing import Literal, LiteralString, TypeGuard, Optional
 from typing_extensions import TypeForm, TypeIs
 
 

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, Callable, Generic, TypeVar, Union
 
 
-from typing import Optional
+from typing import TypeVar, Union, Optional
 
 S = TypeVar("S")
 
