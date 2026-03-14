@@ -425,24 +425,40 @@ describe(`Basic language server tests`, () => {
 
             const marker = info.testData.markerPositions.get('marker')!;
             const fileUri = marker.fileUri.toString();
-            const diagCountBefore = info.diagnostics.length;
 
-            // Send a textDocument/didChange notification for the file.
-            info.connection.sendNotification(DidChangeTextDocumentNotification.type, {
-                textDocument: { uri: fileUri, version: 2 },
-                contentChanges: [{ text: 'from math import cos, sin\n' }],
+            // Register a listener BEFORE sending didChange to track any empty-diagnostics events.
+            let sawEmptyDiagnosticsForFile = false;
+            const disposable = info.diagnosticsEvent((p) => {
+                if (p.uri === fileUri && p.diagnostics.length === 0) {
+                    sawEmptyDiagnosticsForFile = true;
+                }
             });
 
-            // Verify no immediate empty diagnostics notification was sent (i.e., no extra
-            // PublishDiagnostics was pushed synchronously for this file with empty diagnostics).
-            // We give it a brief moment to confirm no spurious empty diagnostic appears.
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            const newEntries = info.diagnostics.slice(diagCountBefore);
-            const emptyForFile = newEntries.filter((d) => d.uri === fileUri && d.diagnostics.length === 0);
+            try {
+                // Send a textDocument/didChange notification for the file.
+                info.connection.sendNotification(DidChangeTextDocumentNotification.type, {
+                    textDocument: { uri: fileUri, version: 2 },
+                    contentChanges: [{ text: 'from math import cos, sin\n' }],
+                });
+
+                // Wait for the full reanalysis cycle to complete by waiting for the next
+                // non-empty diagnostics event for this file. This is deterministic: once the
+                // analysis-cycle diagnostics arrive, all synchronous events (including any
+                // spurious empty-diagnostics publish) will have already fired.
+                await waitForEvent(
+                    info.diagnosticsEvent,
+                    'reanalysis diagnostics',
+                    (p) => p.uri === fileUri && p.diagnostics.length > 0
+                );
+            } finally {
+                disposable.dispose();
+            }
+
+            // After the full cycle, verify that no empty-diagnostics notification was published.
             assert.strictEqual(
-                emptyForFile.length,
-                0,
-                `Expected no immediate empty diagnostics when clearDiagnosticsOnChange is disabled`
+                sawEmptyDiagnosticsForFile,
+                false,
+                `Expected no empty diagnostics when clearDiagnosticsOnChange is disabled`
             );
         });
     });
