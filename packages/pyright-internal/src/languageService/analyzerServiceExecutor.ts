@@ -74,6 +74,7 @@ export class AnalyzerServiceExecutor {
             disableOrganizeImports: true,
             disableWorkspaceSymbol: true,
             clearDiagnosticsOnChange: false,
+            diagnosticDelay: 250,
             isInitialized: createInitStatus(),
             searchPathsToWatch: [],
         };
@@ -108,6 +109,7 @@ export function getEffectiveCommandLineOptions(
     commandLineOptions.languageServerSettings.enableAmbientAnalysis = trackFiles;
     commandLineOptions.configSettings.pythonEnvironmentName = pythonEnvironmentName;
     commandLineOptions.languageServerSettings.disableTaggedHints = serverSettings.disableTaggedHints;
+    commandLineOptions.languageServerSettings.diagnosticDelay = serverSettings.diagnosticDelay;
 
     if (!trackFiles) {
         commandLineOptions.languageServerSettings.watchForSourceChanges = false;

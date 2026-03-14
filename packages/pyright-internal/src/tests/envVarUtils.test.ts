@@ -223,6 +223,7 @@ function createWorkspace(rootUri: Uri | undefined) {
         disableOrganizeImports: false,
         disableWorkspaceSymbol: false,
         clearDiagnosticsOnChange: false,
+        diagnosticDelay: 250,
         isInitialized: createInitStatus(),
         searchPathsToWatch: [],
     };

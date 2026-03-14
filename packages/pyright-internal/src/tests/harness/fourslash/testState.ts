@@ -209,6 +209,7 @@ export class TestState {
             disableOrganizeImports: false,
             disableWorkspaceSymbol: false,
             clearDiagnosticsOnChange: false,
+            diagnosticDelay: 250,
             isInitialized: createInitStatus(),
             searchPathsToWatch: [],
         };

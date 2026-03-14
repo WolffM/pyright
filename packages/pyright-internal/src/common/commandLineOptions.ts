@@ -149,6 +149,9 @@ export class CommandLineLanguageServerOptions {
 
     // Virtual environments directory.
     venvPath?: string | undefined;
+
+    // Delay in milliseconds before reanalyzing after a file change.
+    diagnosticDelay?: number | undefined;
 }
 
 // Some options can be specified from a source other than the pyright config file.

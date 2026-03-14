@@ -47,6 +47,7 @@ export interface ServerSettings {
     taskListTokens?: TaskListToken[];
     functionSignatureDisplay?: SignatureDisplayType | undefined;
     clearDiagnosticsOnChange?: boolean | undefined;
+    diagnosticDelay?: number | undefined;
 }
 
 export interface MessageAction {
